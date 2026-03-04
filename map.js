@@ -98,6 +98,15 @@
         return CREEKS.find(c => isOverCreek(c, viewX, viewY)) ?? null;
     }
 
+    // Wider screen-space hit area for touch (covers the ripple rings)
+    function creekAtRipple(viewX, viewY) {
+        return CREEKS.find(c => {
+            const sx = c.centroid.x * scale + x;
+            const sy = c.centroid.y * scale + y;
+            return Math.hypot(viewX - sx, viewY - sy) < 80;
+        }) ?? null;
+    }
+
     // Hover
     let hoveredCreek = null;
 
@@ -480,6 +489,24 @@
 
         if (ids.length === 0) {
             isDragging = false;
+
+            // Tap detection — preventDefault() suppresses synthetic click on mobile,
+            // so we handle creek/ripple taps here instead.
+            if (e.changedTouches.length === 1) {
+                const t = e.changedTouches[0];
+                const wasDrag = Math.hypot(t.clientX - pointerDownX, t.clientY - pointerDownY) > 8;
+                if (!wasDrag) {
+                    const creek = creekAt(t.clientX, t.clientY) ?? creekAtRipple(t.clientX, t.clientY);
+                    if (creek) {
+                        pullToCreek(creek);
+                        openPanel(creek);
+                    } else {
+                        closePanel();
+                    }
+                    return;
+                }
+            }
+
             if (touchMoveHistory.length) {
                 const window = Math.max(performance.now() - touchMoveHistory[0].t, 1);
                 let sumX = 0, sumY = 0;
