@@ -109,9 +109,14 @@
         velX = velY = 0;
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
         const vw = viewport.clientWidth, vh = viewport.clientHeight;
-        const zoomTo = Math.min(creek.zoomTo, MAX_SCALE);
-        const nx = clamp(vw * creek.viewX - creek.centroid.x * zoomTo, vw - MAP_W * zoomTo, 0);
-        const ny = clamp(vh * 0.50 - creek.centroid.y * zoomTo, vh - MAP_H * zoomTo, 0);
+        const isMobile = vw <= 640;
+        const zoomTo   = Math.min(isMobile ? creek.zoomTo * 0.5 : creek.zoomTo, MAX_SCALE);
+        // Mobile: panel covers bottom 55vh, so centre creek in the upper 45%
+        // Desktop: panel on right side, so push creek to creek.viewX from left
+        const targetX  = isMobile ? 0.50 : creek.viewX;
+        const targetY  = isMobile ? 0.45 * 0.5 : 0.50;
+        const nx = clamp(vw * targetX - creek.centroid.x * zoomTo, vw - MAP_W * zoomTo, 0);
+        const ny = clamp(vh * targetY - creek.centroid.y * zoomTo, vh - MAP_H * zoomTo, 0);
         container.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
         x = nx; y = ny; scale = zoomTo; targetScale = zoomTo;
         applyTransform();

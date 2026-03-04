@@ -104,7 +104,7 @@ html, body {
     font-size: 5rem;
     font-weight: 300;
     letter-spacing: 0.18em;
-    color: #fff;
+    color: #633d3d;
     text-shadow: 0 1px 6px rgba(0,0,0,0.55);
     white-space: nowrap;
     user-select: none;
@@ -302,4 +302,74 @@ html, body {
 
 .info-panel p + p {
     margin-top: 12px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+/* Touch devices: suppress hover-only effects */
+@media (hover: none) {
+    .creek-img.creek-hover {
+        transform: none;
+        animation-play-state: running;
+    }
+}
+
+/* Tablet (641px – 1024px) */
+@media (max-width: 1024px) and (min-width: 641px) {
+    #title {
+        font-size: 3.5rem;
+    }
+
+    .info-panel {
+        width: 42vw;
+        padding: 36px 28px;
+    }
+}
+
+/* Mobile (≤ 640px) — bottom-sheet layout */
+@media (max-width: 640px) {
+    #title {
+        font-size: 2rem;
+        top: 8%;
+        letter-spacing: 0.12em;
+    }
+
+    /* Info panel: full-width bottom sheet */
+    .info-panel {
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 55vh;
+        transform: translateY(12px);
+        border-radius: 12px 12px 0 0;
+        padding: 28px 24px 40px;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .info-panel.visible {
+        transform: translateY(0);
+    }
+
+    /* About overlay: bottom sheet */
+    #about-overlay {
+        align-items: flex-end;
+    }
+
+    #about-container {
+        width: 100%;
+        border-radius: 12px 12px 0 0;
+    }
+
+    #about-panel, #about-cited {
+        max-height: 80vh;
+        padding: 28px 24px 40px;
+        border-radius: 0;
+    }
+
+    /* Tighten button spacing */
+    #btn-reset     { bottom: 20px; right: 20px; }
+    #btn-randomize { bottom: 20px; right: 72px; }
+    #btn-about     { bottom: 20px; left: 20px; }
 }
