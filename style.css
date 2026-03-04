@@ -33,6 +33,15 @@ html, body {
     will-change: transform;
 }
 
+#creek-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+    z-index: 60;
+}
+
 /* ── Loading screen ─────────────────────────────────────────────────────── */
 
 #loading-screen {
@@ -76,6 +85,22 @@ html, body {
     animation: none;
     width: 100%;
     transition: width 0.25s ease-out;
+}
+
+/* ── Map dimmer ──────────────────────────────────────────────────────────── */
+
+#map-dimmer {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(48, 25, 12, 0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+#map-dimmer.visible {
+    opacity: 1;
 }
 
 /* ── UI overlay ──────────────────────────────────────────────────────────── */
@@ -239,29 +264,22 @@ html, body {
     -webkit-user-select: none;
 }
 
-/* ── Brothers Creek overlay ──────────────────────────────────────────────── */
-
-@keyframes creek-breathe {
-    0%, 100% { filter: brightness(1); }
-    50%       { filter: brightness(1.08); }
-}
+/* ── Creek overlay ──────────────────────────────────────────────── */
 
 .creek-img {
     position: absolute;
     top: 0;
     left: 0;
-    transition: transform 0.3s ease;
-    animation: creek-breathe 3s ease-in-out infinite;
+    transition: transform 0.5s ease;
 }
 
 .creek-img.creek-hover {
     transform: scale(1.08);
-    animation-play-state: paused;
+    filter:brightness(1.02);
 }
 
 .creek-img.creek-active {
-    animation-play-state: paused;
-    filter: brightness(1) !important;
+    transform: scale(1);
 }
 
 /* ── Creek ripple ────────────────────────────────────────────────────────── */
@@ -279,6 +297,7 @@ html, body {
     overflow: visible;
     pointer-events: auto;
     cursor: pointer;
+    transition: opacity 0.4s ease;
 }
 
 .creek-ripple-ring {
@@ -294,9 +313,9 @@ html, body {
 .creek-ripple-ring:nth-child(2) { animation-delay: 1s; }
 .creek-ripple-ring:nth-child(3) { animation-delay: 2s; }
 
-.creek-ripple.creek-active .creek-ripple-ring {
-    animation-play-state: paused;
+.creek-ripple.creek-active {
     opacity: 0;
+    pointer-events: none;
 }
 
 /* ── Info panel ──────────────────────────────────────────────────────────── */

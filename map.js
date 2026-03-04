@@ -1,6 +1,7 @@
 (() => {
-    const viewport  = document.getElementById('viewport');
-    const container = document.getElementById('map-container');
+    const viewport        = document.getElementById('viewport');
+    const container       = document.getElementById('map-container');
+    const creekContainer  = document.getElementById('creek-container');
 
     const MAP_W    = 3716;
     const MAP_H    = 2063;
@@ -63,7 +64,7 @@
                 ring.className = 'creek-ripple-ring';
                 ripple.appendChild(ring);
             }
-            container.insertBefore(ripple, c.img);
+            creekContainer.insertBefore(ripple, c.img);
             c.ripple = ripple;
 
             ripple.addEventListener('click', e => {
@@ -89,9 +90,18 @@
     function isOverCreek(creek, viewX, viewY) {
         const mx = (viewX - x) / scale;
         const my = (viewY - y) / scale;
-        if (mx < 0 || my < 0 || mx >= MAP_W || my >= MAP_H) return false;
-        try { return creek.hitCtx.getImageData(mx | 0, my | 0, 1, 1).data[3] > 10; }
-        catch { return false; }
+        // Sample a patch ~14 screen pixels wide so narrow creek lines are easy to hit
+        const r  = Math.max(2, Math.round(14 / scale));
+        const px = Math.max(0, (mx | 0) - r);
+        const py = Math.max(0, (my | 0) - r);
+        const pw = Math.min((mx | 0) + r + 1, MAP_W)  - px;
+        const ph = Math.min((my | 0) + r + 1, MAP_H) - py;
+        if (pw <= 0 || ph <= 0) return false;
+        try {
+            const d = creek.hitCtx.getImageData(px, py, pw, ph).data;
+            for (let i = 3; i < d.length; i += 4) if (d[i] > 10) return true;
+            return false;
+        } catch { return false; }
     }
 
     function creekAt(viewX, viewY) {
@@ -112,14 +122,17 @@
 
     // Panel
     let openCreek = null;
-    const titleEl = document.getElementById('title');
+    const titleEl   = document.getElementById('title');
+    const mapDimmer = document.getElementById('map-dimmer');
 
     function openPanel(creek) {
         closePanel();
+        if (hoveredCreek) { hoveredCreek.img.classList.remove('creek-hover'); hoveredCreek = null; }
         openCreek = creek;
         creek.panel.classList.add('visible');
         creek.img.classList.add('creek-active');
         if (creek.ripple) creek.ripple.classList.add('creek-active');
+        mapDimmer.classList.add('visible');
         titleEl.classList.add('title-hidden');
     }
 
@@ -128,9 +141,7 @@
         openCreek.panel.classList.remove('visible');
         openCreek.img.classList.remove('creek-active');
         if (openCreek.ripple) openCreek.ripple.classList.remove('creek-active');
-        openCreek.img.style.animation = 'none';
-        openCreek.img.offsetHeight; // force reflow
-        openCreek.img.style.animation = '';
+        mapDimmer.classList.remove('visible');
         openCreek = null;
         titleEl.classList.remove('title-hidden');
     }
@@ -147,14 +158,14 @@
         const targetY  = isMobile ? 0.45 * 0.5 : 0.50;
         const nx = clamp(vw * targetX - creek.centroid.x * zoomTo, vw - MAP_W * zoomTo, 0);
         const ny = clamp(vh * targetY - creek.centroid.y * zoomTo, vh - MAP_H * zoomTo, 0);
-        container.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+        container.style.transition = creekContainer.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
         x = nx; y = ny; scale = zoomTo; targetScale = zoomTo;
         applyTransform();
-        setTimeout(() => { container.style.transition = ''; }, 750);
+        setTimeout(() => { container.style.transition = creekContainer.style.transition = ''; }, 750);
     }
 
     viewport.addEventListener('mousemove', e => {
-        if (!isDragging) {
+        if (!isDragging && !openCreek) {
             const creek = creekAt(e.clientX, e.clientY);
             if (creek !== hoveredCreek) {
                 if (hoveredCreek) hoveredCreek.img.classList.remove('creek-hover');
@@ -261,7 +272,9 @@
     }
 
     function applyTransform() {
-        container.style.transform = `translate(${x}px,${y}px) scale(${scale})`;
+        const t = `translate(${x}px,${y}px) scale(${scale})`;
+        container.style.transform = t;
+        creekContainer.style.transform = t;
     }
 
     function startAnim() {
@@ -539,10 +552,10 @@
         const newX = (vw - MAP_W * newScale) / 2;
         const newY = (vh - MAP_H * newScale) / 2;
 
-        container.style.transition = 'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)';
+        container.style.transition = creekContainer.style.transition = 'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)';
         x = newX; y = newY; scale = newScale; targetScale = newScale;
         applyTransform();
-        setTimeout(() => { container.style.transition = ''; }, 600);
+        setTimeout(() => { container.style.transition = creekContainer.style.transition = ''; }, 600);
     });
 
     // ── Randomize button ──────────────────────────────────────────────────
