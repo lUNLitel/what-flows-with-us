@@ -382,6 +382,12 @@
         isDragging       = true;
         touchMoveHistory = [];
 
+        // Track tap origin so the click handler can distinguish tap from drag
+        if (e.touches.length === 1) {
+            pointerDownX = e.touches[0].clientX;
+            pointerDownY = e.touches[0].clientY;
+        }
+
         for (const t of e.changedTouches) touches[t.identifier] = t;
         updateTouchAnchors();
     }, { passive: false });
