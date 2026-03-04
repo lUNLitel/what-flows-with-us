@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Water Acknowledgement Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&display=swap">
+    <link rel="preload" href="media/map.png" as="image">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <div id="loading-bar-track">
+            <div id="loading-bar"></div>
+        </div>
+    </div>
+
+    <div id="title" class="ui-element">What Flows With Us</div>
+
+    <button id="btn-about" title="About">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+        </svg>
+    </button>
+
+    <button id="btn-randomize" class="ui-element" title="Random creek">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 1.9-1.7 3.3-1.7H22"/>
+            <path d="m18 2 4 4-4 4"/>
+            <path d="M2 6h1.9c1.2 0 2.3.5 3.1 1.4"/>
+            <path d="M22 18h-5.9c-1.2 0-2.3-.5-3.1-1.4l-.5-.6"/>
+            <path d="m18 14 4 4-4 4"/>
+        </svg>
+    </button>
+
+    <button id="btn-reset" class="ui-element" title="Reset view">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+            <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+            <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+            <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+        </svg>
+    </button>
+
+    <div id="viewport">
+        <div id="map-container">
+            <img src="media/map.png" alt="Map" draggable="false" fetchpriority="high" decoding="async">
+            <img id="creek-brothers" class="creek-img" src="media/brothers creek.png" alt="Brothers Creek" draggable="false" decoding="async">
+        </div>
+    </div>
+
+    <div id="panel-brothers" class="info-panel">
+        <h2>Brothers Creek</h2>
+        <p>A creek that I drive by every day without realizing its presence.</p>
+        <p>Everytime I head to school, it runs with me all the way down the mountain. Then, I will drive across it on a tiny bridge, which I never thought is a bridge.</p>
+        <p>It flows quietly, unnoticed by most. But it is the life source for the surrounding ecosystem. The bears, the deer, and the birds all depend on it.</p>
+        <p>It is quiet, yet, powerful. And today, I finally known its name, Brothers Creek.</p>
+        <p style="text-align: right;">- Ryan</p>
+    </div>
+    <div id="about-overlay">
+        <div id="about-container">
+            <div id="about-panels-wrapper">
+                <div id="about-panel">
+                    <h2>What Flows With Us</h2>
+                    <p>A water acknowledgement map of the lands and waterways around us.</p>
+                    <p>This project is a reminder that the creeks, rivers, and streams we pass every day have names, histories, and life of their own.</p>
+                    <p>Click on a highlighted waterway to learn more about it.</p>
+                    <p style="margin-top: 24px; opacity: 0.5; font-size: 0.85rem;">Made and designed by Ryan Wang in collaboration with SG, and Olivia</p>
+                    <p style="margin-top: 24px; opacity: 0.5; font-size: 0.85rem;">Map data sourced from Google Maps</p>
+                    <p id="btn-work-cited" style="margin-top: 24px; color: cadetblue; cursor: pointer;">Work Cited →</p>
+                </div>
+                <div id="about-cited">
+                    <p id="btn-back-cited" style="margin-bottom: 20px; opacity: 0.55; cursor: pointer; font-size: 0.85rem;">← Back</p>
+                    <h2>Work Cited</h2>
+                    <ul>
+                        <li><a href="#">Metro Vancouver Watersheds — Source Water Protection</a></li>
+                        <li><a href="#">City of Vancouver — Streams &amp; Urban Waterways</a></li>
+                        <li><a href="#">Musqueam Indian Band — Traditional Territory</a></li>
+                        <li><a href="#">Squamish Nation — Lands &amp; Resources</a></li>
+                        <li><a href="#">Tsleil-Waututh Nation — Water &amp; Land Stewardship</a></li>
+                        <li><a href="#">BC Freshwater Atlas — Stream Network Data</a></li>
+                        <li><a href="#">North Shore Spirit Trail — Brothers Creek</a></li>
+                        <li><a href="#">Google Maps — Satellite &amp; Terrain Imagery</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="map.js"></script>
+</body>
+</html>
