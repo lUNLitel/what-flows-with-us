@@ -52,6 +52,25 @@
             c.hitCtx.drawImage(hitSrc, 0, 0);
             c.centroid = calcCentroid(c.hitCtx);
             c.img.style.transformOrigin = `${c.centroid.x}px ${c.centroid.y}px`;
+
+            // Build ripple and insert behind the creek image
+            const ripple = document.createElement('div');
+            ripple.className = 'creek-ripple';
+            ripple.style.left = `${c.centroid.x}px`;
+            ripple.style.top  = `${c.centroid.y}px`;
+            for (let i = 0; i < 3; i++) {
+                const ring = document.createElement('div');
+                ring.className = 'creek-ripple-ring';
+                ripple.appendChild(ring);
+            }
+            container.insertBefore(ripple, c.img);
+            c.ripple = ripple;
+
+            ripple.addEventListener('click', e => {
+                e.stopPropagation(); // prevent viewport click from calling closePanel
+                pullToCreek(c);
+                openPanel(c);
+            });
         };
         hitSrc.src = c.src;
     });
@@ -91,6 +110,7 @@
         openCreek = creek;
         creek.panel.classList.add('visible');
         creek.img.classList.add('creek-active');
+        if (creek.ripple) creek.ripple.classList.add('creek-active');
         titleEl.classList.add('title-hidden');
     }
 
@@ -98,6 +118,7 @@
         if (!openCreek) return;
         openCreek.panel.classList.remove('visible');
         openCreek.img.classList.remove('creek-active');
+        if (openCreek.ripple) openCreek.ripple.classList.remove('creek-active');
         openCreek.img.style.animation = 'none';
         openCreek.img.offsetHeight; // force reflow
         openCreek.img.style.animation = '';
