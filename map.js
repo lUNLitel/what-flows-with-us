@@ -470,6 +470,7 @@
     // ── Reset button ──────────────────────────────────────────────────────
 
     document.getElementById('btn-reset').addEventListener('click', () => {
+        closePanel();
         velX = velY = 0;
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
 
