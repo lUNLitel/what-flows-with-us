@@ -9,6 +9,11 @@
     const FRICTION  = 0.90;
     const ZOOM_LERP = 0.15;
 
+    // Hit map is stored at 1/4 resolution — ~480 KB per creek vs ~30 MB full-size
+    const HIT_SCALE = 4;
+    const HIT_W     = Math.ceil(MAP_W / HIT_SCALE);
+    const HIT_H     = Math.ceil(MAP_H / HIT_SCALE);
+
     // ── Loading screen ────────────────────────────────────────────────────
 
     const loadingScreen = document.getElementById('loading-screen');
@@ -35,7 +40,10 @@
     // and <div class="info-panel"> to index.html with matching ids.
 
     const CREEKS = [
-        { id: 'creek-brothers', panelId: 'panel-brothers', src: 'media/brothers creek.png', zoomTo: 2.5, viewX: 0.30 },
+        { id: 'creek-brothers', panelId: 'panel-brothers', src: 'media/water_ui/brothers creek.png', zoomTo: 2.5, viewX: 0.30 },
+        { id: 'creek-latimer',  panelId: 'panel-latimer',  src: 'media/water_ui/latimer creek.png',  zoomTo: 2.0, viewX: 0.65 },
+        { id: 'creek-fraser',   panelId: 'panel-fraser',   src: 'media/water_ui/fraser river.png',   zoomTo: 1.5, viewX: 0.50 },
+        { id: 'creek-stoney',   panelId: 'panel-stoney',   src: 'media/water_ui/stoney creek.png',   zoomTo: 2.0, viewX: 0.50 },
     ];
 
     CREEKS.forEach(c => {
@@ -43,15 +51,19 @@
         c.panel    = document.getElementById(c.panelId);
         c.centroid = { x: MAP_W / 3, y: MAP_H / 2 };
 
-        const hitCanvas  = document.createElement('canvas');
-        hitCanvas.width  = MAP_W;
-        hitCanvas.height = MAP_H;
-        c.hitCtx = hitCanvas.getContext('2d', { willReadFrequently: true });
-
         const hitSrc = new Image();
         hitSrc.onload = () => {
-            c.hitCtx.drawImage(hitSrc, 0, 0);
-            c.centroid = calcCentroid(c.hitCtx);
+            // Draw once at 1/4 size, extract alpha into a flat Uint8Array, discard the canvas
+            const hitCanvas  = document.createElement('canvas');
+            hitCanvas.width  = HIT_W;
+            hitCanvas.height = HIT_H;
+            const hitCtx = hitCanvas.getContext('2d', { willReadFrequently: true });
+            hitCtx.drawImage(hitSrc, 0, 0, HIT_W, HIT_H);
+            const raw = hitCtx.getImageData(0, 0, HIT_W, HIT_H).data;
+            c.hitData = new Uint8Array(HIT_W * HIT_H);
+            for (let i = 0; i < c.hitData.length; i++) c.hitData[i] = raw[i * 4 + 3];
+
+            c.centroid = calcCentroid(c.hitData);
             c.img.style.transformOrigin = `${c.centroid.x}px ${c.centroid.y}px`;
 
             // Build ripple and insert behind the creek image
@@ -76,32 +88,34 @@
         hitSrc.src = c.src;
     });
 
-    function calcCentroid(hitCtx) {
+    function calcCentroid(hitData) {
         try {
-            const d = hitCtx.getImageData(0, 0, MAP_W, MAP_H).data;
             let sx = 0, sy = 0, n = 0;
-            for (let py = 0; py < MAP_H; py += 4)
-                for (let px = 0; px < MAP_W; px += 4)
-                    if (d[(py * MAP_W + px) * 4 + 3] > 10) { sx += px; sy += py; n++; }
-            return n > 0 ? { x: sx / n, y: sy / n } : { x: MAP_W / 3, y: MAP_H / 2 };
+            for (let py = 0; py < HIT_H; py++)
+                for (let px = 0; px < HIT_W; px++)
+                    if (hitData[py * HIT_W + px] > 10) { sx += px; sy += py; n++; }
+            return n > 0
+                ? { x: (sx / n) * HIT_SCALE, y: (sy / n) * HIT_SCALE }
+                : { x: MAP_W / 3, y: MAP_H / 2 };
         } catch { return { x: MAP_W / 3, y: MAP_H / 2 }; }
     }
 
     function isOverCreek(creek, viewX, viewY) {
+        if (!creek.hitData) return false;
         const mx = (viewX - x) / scale;
         const my = (viewY - y) / scale;
-        // Sample a patch ~14 screen pixels wide so narrow creek lines are easy to hit
-        const r  = Math.max(2, Math.round(14 / scale));
-        const px = Math.max(0, (mx | 0) - r);
-        const py = Math.max(0, (my | 0) - r);
-        const pw = Math.min((mx | 0) + r + 1, MAP_W)  - px;
-        const ph = Math.min((my | 0) + r + 1, MAP_H) - py;
-        if (pw <= 0 || ph <= 0) return false;
-        try {
-            const d = creek.hitCtx.getImageData(px, py, pw, ph).data;
-            for (let i = 3; i < d.length; i += 4) if (d[i] > 10) return true;
-            return false;
-        } catch { return false; }
+        // Sample a patch ~14 screen pixels wide in hit-map space
+        const r  = Math.max(1, Math.round(14 / scale / HIT_SCALE));
+        const hx = mx / HIT_SCALE;
+        const hy = my / HIT_SCALE;
+        const x0 = Math.max(0,    (hx | 0) - r);
+        const y0 = Math.max(0,    (hy | 0) - r);
+        const x1 = Math.min(HIT_W, (hx | 0) + r + 1);
+        const y1 = Math.min(HIT_H, (hy | 0) + r + 1);
+        for (let cy = y0; cy < y1; cy++)
+            for (let cx = x0; cx < x1; cx++)
+                if (creek.hitData[cy * HIT_W + cx] > 10) return true;
+        return false;
     }
 
     function creekAt(viewX, viewY) {
@@ -125,23 +139,48 @@
     const titleEl   = document.getElementById('title');
     const mapDimmer = document.getElementById('map-dimmer');
 
+    // ── Scroll hints ──────────────────────────────────────────────────────────
+
+    const CHEVRON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+
+    document.querySelectorAll('.info-panel').forEach(panel => {
+        const scrollEl = panel.querySelector('.info-panel-scroll');
+        const hint = document.createElement('div');
+        hint.className = 'scroll-hint hidden';
+        hint.innerHTML = CHEVRON_SVG;
+        panel.appendChild(hint);
+
+        scrollEl.addEventListener('scroll', () => {
+            const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 24;
+            hint.classList.toggle('hidden', atBottom);
+        });
+    });
+
     function openPanel(creek) {
         closePanel();
         if (hoveredCreek) { hoveredCreek.img.classList.remove('creek-hover'); hoveredCreek = null; }
         openCreek = creek;
         creek.panel.classList.add('visible');
         creek.img.classList.add('creek-active');
-        if (creek.ripple) creek.ripple.classList.add('creek-active');
+        CREEKS.forEach(c => { if (c.ripple) c.ripple.classList.add('creek-active'); });
         mapDimmer.classList.add('visible');
         titleEl.classList.add('title-hidden');
+        requestAnimationFrame(() => {
+            const scrollEl = creek.panel.querySelector('.info-panel-scroll');
+            const hint     = creek.panel.querySelector('.scroll-hint');
+            if (scrollEl) scrollEl.scrollTop = 0;
+            if (hint && scrollEl) hint.classList.toggle('hidden', scrollEl.scrollHeight <= scrollEl.clientHeight + 10);
+        });
     }
 
     function closePanel() {
         if (!openCreek) return;
         openCreek.panel.classList.remove('visible');
         openCreek.img.classList.remove('creek-active');
-        if (openCreek.ripple) openCreek.ripple.classList.remove('creek-active');
+        CREEKS.forEach(c => { if (c.ripple) c.ripple.classList.remove('creek-active'); });
         mapDimmer.classList.remove('visible');
+        const hint = openCreek.panel.querySelector('.scroll-hint');
+        if (hint) hint.classList.add('hidden');
         openCreek = null;
         titleEl.classList.remove('title-hidden');
     }

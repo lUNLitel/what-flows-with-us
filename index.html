@@ -19,7 +19,7 @@
 
     <div id="title" class="ui-element">What Flows With Us</div>
 
-    <button id="btn-about" title="About">
+    <button id="btn-about" class="ui-element" title="About">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 16v-4"/>
@@ -53,17 +53,53 @@
             <img src="media/map.png" alt="Map" draggable="false" fetchpriority="high" decoding="async">
         </div>
         <div id="creek-container">
-            <img id="creek-brothers" class="creek-img" src="media/brothers creek.png" alt="Brothers Creek" draggable="false" decoding="async">
+            <img id="creek-brothers"  class="creek-img" src="media/water_ui/brothers creek.png"  alt="Brothers Creek"  draggable="false" decoding="async">
+            <img id="creek-latimer"   class="creek-img" src="media/water_ui/latimer creek.png"   alt="Latimer Creek"   draggable="false" decoding="async">
+            <img id="creek-fraser"    class="creek-img" src="media/water_ui/fraser river.png"    alt="Fraser River"    draggable="false" decoding="async">
+            <img id="creek-stoney"    class="creek-img" src="media/water_ui/stoney creek.png"    alt="Stoney Creek"    draggable="false" decoding="async">
         </div>
     </div>
 
     <div id="panel-brothers" class="info-panel">
-        <h2>Brothers Creek</h2>
-        <p>A creek that I drive by every day without realizing its presence.</p>
-        <p>Everytime I head to school, it runs with me all the way down the mountain. Then, I will drive across it on a tiny bridge, which I never thought is a bridge.</p>
-        <p>It flows quietly, unnoticed by most. But it is the life source for the surrounding ecosystem. The bears, the deer, and the birds all depend on it.</p>
-        <p>It is quiet, yet, powerful. And today, I finally known its name, Brothers Creek.</p>
-        <p style="text-align: right;">- Ryan</p>
+        <div class="info-panel-scroll">
+            <h2>Brothers Creek</h2>
+            <p>A creek that I drive by every day without realizing its presence.</p>
+            <p>Everytime I head to school, it runs with me all the way down the mountain. Then, I will drive across it on a tiny bridge, which I never thought is a bridge.</p>
+            <p>It flows quietly, unnoticed by most. But it is the life source for the surrounding ecosystem. The bears, the deer, and the birds all depend on it.</p>
+            <p>It is quiet, yet, powerful. And today, I finally known its name, Brothers Creek.</p>
+            <p style="text-align: right;">- Ryan</p>
+        </div>
+    </div>
+
+    <div id="panel-latimer" class="info-panel">
+        <div class="info-panel-scroll">
+            <h2>Latimer Creek</h2>
+            <img class="panel-photo" src="media/creek photos/latimer creek.png" alt="Latimer Creek">
+            <p>I had no idea until I looked at the map how long Latimer Creek ran from Langley Township and into Surrey. I realized that the bus I take almost every day to school and into the city would drive over this watershed. I pass by the pond beside Carvolth Exchange all the time which I just learned is a stormwater pond.</p>
+            <p>Does Latimer Creek run into this industrialized body of water? Latimer Creek reminded me of Still Creek, as it is salmon-bearing and also cluttered with invasive Himalayan blackberries. Upon learning more about this creek, I'm excited to see how I can better support my community's restoration efforts.</p>
+            <p style="text-align: right;">- SG</p>
+        </div>
+    </div>
+
+    <div id="panel-fraser" class="info-panel">
+        <div class="info-panel-scroll">
+            <h2>Fraser River</h2>
+            <img class="panel-photo" src="media/creek photos/fraser river.jpg" alt="Fraser River">
+            <p>On my commute, after passing by Latimer Creek, the bus takes us over the Portmann Bridge where, if I look to my left, I see industries, Vancouver, Burnaby, Coquitlam, Surrey, and more, and if I look to my right, I see Douglas Island, Pitt Meadows and a clear view of the mountains.</p>
+            <p>This view is a lot different compared to growing up in New Westminster and frequently crossing the former Patullo Bridge (now newly built and called stal̕əw̓asəm) because I don't see the familiar log rafts nor can I feel the breeze of the water's flow because I am further away from water's surface.</p>
+            <p style="text-align: right;">- SG</p>
+        </div>
+    </div>
+
+    <div id="panel-stoney" class="info-panel">
+        <div class="info-panel-scroll">
+            <h2>Stoney Creek</h2>
+            <img class="panel-photo" src="media/creek photos/stoney creek.png" alt="Stoney Creek">
+            <p>When I take the Millennium Line, I pass by Stoney Creek that runs through Burnaby and into the Brunette River and Burnaby Lake. I learned that it is also a salmon-bearing habitat like many other creeks in the Lower Mainland which fills me with a bittersweet feeling that these lands and waters were once plentiful homes for salmon to return to (and there is a lot of work being done to get to that state again).</p>
+            <p>The "stoney" in its name refers to the stoney stream bed of Burnaby Mountain's largest waterway. As a child, I visited many of these creeks and trails with my family. We no longer do that as often because of different priorities and the general flow of life.</p>
+            <p>It's weird that most of my interaction with these water bodies is now from above (sometimes way above), fast, and seamless through public transportation. I am eager to visit these waters now and experience immersing myself in the environment and taking slower and more non-linear travels.</p>
+            <p style="text-align: right;">- SG</p>
+        </div>
     </div>
     <div id="about-overlay">
         <div id="about-container">
@@ -81,14 +117,9 @@
                     <p id="btn-back-cited" style="margin-bottom: 20px; opacity: 0.55; cursor: pointer; font-size: 0.85rem;">← Back</p>
                     <h2>Work Cited</h2>
                     <ul>
-                        <li><a href="#">Metro Vancouver Watersheds — Source Water Protection</a></li>
-                        <li><a href="#">City of Vancouver — Streams &amp; Urban Waterways</a></li>
-                        <li><a href="#">Musqueam Indian Band — Traditional Territory</a></li>
-                        <li><a href="#">Squamish Nation — Lands &amp; Resources</a></li>
-                        <li><a href="#">Tsleil-Waututh Nation — Water &amp; Land Stewardship</a></li>
-                        <li><a href="#">BC Freshwater Atlas — Stream Network Data</a></li>
-                        <li><a href="#">North Shore Spirit Trail — Brothers Creek</a></li>
-                        <li><a href="#">Google Maps — Satellite &amp; Terrain Imagery</a></li>
+                        <li><a href="https://www.westvancouverstreamkeepers.ca/creek-data" target="_blank" rel="noopener">West Vancouver Streamkeepers — Creek Data</a></li>
+                        <li><a href="https://www.surrey.ca/sites/default/files/media/documents/LatimerCreek_ISMP.pdf" target="_blank" rel="noopener">City of Surrey — Latimer Creek ISMP</a></li>
+                        <li><a href="https://www.burnaby.ca/sites/default/files/acquiadam/2021-07/Waterways%20of%20Burnaby.pdf" target="_blank" rel="noopener">City of Burnaby — Waterways of Burnaby</a></li>
                     </ul>
                 </div>
             </div>

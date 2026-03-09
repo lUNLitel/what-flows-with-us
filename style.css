@@ -318,6 +318,45 @@ html, body {
     pointer-events: none;
 }
 
+/* ── Scroll hint ─────────────────────────────────────────────────────────── */
+
+@keyframes hint-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(5px); }
+}
+
+.scroll-hint {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 8px;
+    background: linear-gradient(transparent, #f4ede0 55%);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.scroll-hint.hidden {
+    opacity: 0;
+}
+
+.scroll-hint svg {
+    width: 18px;
+    height: 18px;
+    color: rgba(61, 43, 31, 0.35);
+    animation: hint-bounce 1.4s ease-in-out infinite;
+}
+
+/* ── Panel photo ─────────────────────────────────────────────────────────── */
+
+.panel-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: block;
+}
+
 /* ── Info panel ──────────────────────────────────────────────────────────── */
 
 .info-panel {
@@ -327,10 +366,9 @@ html, body {
     transform: translateY(-50%);
     width: 30vw;
     height: 60vh;
-    overflow-y: auto;
+    overflow: hidden;
     background: #f4ede0;
     border-radius: 12px;
-    padding: 48px 40px;
     color: #3d2b1f;
     font-family: 'Raleway', sans-serif;
     font-weight: 300;
@@ -340,6 +378,14 @@ html, body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-panel-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 48px 40px 16px;
 }
 
 .info-panel.visible {
@@ -376,7 +422,10 @@ html, body {
 
     .info-panel {
         width: 42vw;
-        padding: 36px 28px;
+    }
+
+    .info-panel-scroll {
+        padding: 36px 28px 16px;
     }
 }
 
@@ -398,12 +447,15 @@ html, body {
         height: 55vh;
         transform: translateY(12px);
         border-radius: 12px 12px 0 0;
-        padding: 28px 24px 40px;
         transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
     .info-panel.visible {
         transform: translateY(0);
+    }
+
+    .info-panel-scroll {
+        padding: 28px 24px 16px;
     }
 
     /* About overlay: bottom sheet */
