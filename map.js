@@ -40,10 +40,13 @@
     // and <div class="info-panel"> to index.html with matching ids.
 
     const CREEKS = [
-        { id: 'creek-brothers', panelId: 'panel-brothers', src: 'media/water_ui/brothers creek.png', zoomTo: 2.5, viewX: 0.30 },
-        { id: 'creek-latimer',  panelId: 'panel-latimer',  src: 'media/water_ui/latimer creek.png',  zoomTo: 2.0, viewX: 0.65 },
-        { id: 'creek-fraser',   panelId: 'panel-fraser',   src: 'media/water_ui/fraser river.png',   zoomTo: 1.5, viewX: 0.50 },
-        { id: 'creek-stoney',   panelId: 'panel-stoney',   src: 'media/water_ui/stoney creek.png',   zoomTo: 2.0, viewX: 0.50 },
+        { id: 'creek-brothers',  panelId: 'panel-brothers',  src: 'media/water_ui/brothers creek.png',  zoomTo: 2.5, viewX: 0.30, panelSide: 'right' },
+        { id: 'creek-latimer',   panelId: 'panel-latimer',   src: 'media/water_ui/latimer creek.png',   zoomTo: 2.0, viewX: 0.70, panelSide: 'left'  },
+        { id: 'creek-fraser',    panelId: 'panel-fraser',    src: 'media/water_ui/fraser river.png',    zoomTo: 1.5, viewX: 0.30, panelSide: 'right' },
+        { id: 'creek-fraser02',  panelId: 'panel-fraser02',  src: 'media/water_ui/fraser river_02.png', zoomTo: 1.5, viewX: 0.70, panelSide: 'left'  },
+        { id: 'creek-stoney',    panelId: 'panel-stoney',    src: 'media/water_ui/stoney creek.png',    zoomTo: 2.0, viewX: 0.30, panelSide: 'right' },
+        { id: 'creek-bear',      panelId: 'panel-bear',      src: 'media/water_ui/bear creek.png',      zoomTo: 2.0, viewX: 0.70, panelSide: 'left'  },
+        { id: 'creek-archibald', panelId: 'panel-archibald', src: 'media/water_ui/archibald creek.png', zoomTo: 2.0, viewX: 0.70, panelSide: 'left'  },
     ];
 
     CREEKS.forEach(c => {
@@ -160,6 +163,8 @@
         closePanel();
         if (hoveredCreek) { hoveredCreek.img.classList.remove('creek-hover'); hoveredCreek = null; }
         openCreek = creek;
+        CREEKS.forEach(c => { if (c.img && c !== creek) c.img.style.opacity = '0'; });
+        creek.panel.classList.toggle('panel-left', creek.panelSide === 'left');
         creek.panel.classList.add('visible');
         creek.img.classList.add('creek-active');
         CREEKS.forEach(c => { if (c.ripple) c.ripple.classList.add('creek-active'); });
@@ -175,9 +180,10 @@
 
     function closePanel() {
         if (!openCreek) return;
-        openCreek.panel.classList.remove('visible');
+        openCreek.panel.classList.remove('visible', 'panel-left');
         openCreek.img.classList.remove('creek-active');
         CREEKS.forEach(c => { if (c.ripple) c.ripple.classList.remove('creek-active'); });
+        CREEKS.forEach(c => { if (c.img) c.img.style.opacity = ''; });
         mapDimmer.classList.remove('visible');
         const hint = openCreek.panel.querySelector('.scroll-hint');
         if (hint) hint.classList.add('hidden');
@@ -197,6 +203,7 @@
         const targetY  = isMobile ? 0.45 * 0.5 : 0.50;
         const nx = clamp(vw * targetX - creek.centroid.x * zoomTo, vw - MAP_W * zoomTo, 0);
         const ny = clamp(vh * targetY - creek.centroid.y * zoomTo, vh - MAP_H * zoomTo, 0);
+        CREEKS.forEach(c => { if (c.img && c !== creek) c.img.style.opacity = '0'; });
         container.style.transition = creekContainer.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
         x = nx; y = ny; scale = zoomTo; targetScale = zoomTo;
         applyTransform();
