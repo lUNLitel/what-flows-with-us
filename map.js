@@ -160,7 +160,7 @@
     });
 
     function openPanel(creek) {
-        closePanel();
+        closePanel(false);
         if (hoveredCreek) { hoveredCreek.img.classList.remove('creek-hover'); hoveredCreek = null; }
         openCreek = creek;
         CREEKS.forEach(c => { if (c.img && c !== creek) c.img.style.opacity = '0'; });
@@ -178,12 +178,12 @@
         });
     }
 
-    function closePanel() {
+    function closePanel(restoreOverlays = true) {
         if (!openCreek) return;
         openCreek.panel.classList.remove('visible', 'panel-left');
         openCreek.img.classList.remove('creek-active');
         CREEKS.forEach(c => { if (c.ripple) c.ripple.classList.remove('creek-active'); });
-        CREEKS.forEach(c => { if (c.img) c.img.style.opacity = ''; });
+        if (restoreOverlays) CREEKS.forEach(c => { if (c.img) c.img.style.opacity = ''; });
         mapDimmer.classList.remove('visible');
         const hint = openCreek.panel.querySelector('.scroll-hint');
         if (hint) hint.classList.add('hidden');
@@ -207,7 +207,8 @@
         container.style.transition = creekContainer.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
         x = nx; y = ny; scale = zoomTo; targetScale = zoomTo;
         applyTransform();
-        setTimeout(() => { container.style.transition = creekContainer.style.transition = ''; }, 750);
+        if (pullTimeoutId) clearTimeout(pullTimeoutId);
+        pullTimeoutId = setTimeout(() => { container.style.transition = creekContainer.style.transition = ''; }, 750);
     }
 
     viewport.addEventListener('mousemove', e => {
@@ -254,6 +255,9 @@
 
     // Animation frame handle
     let rafId = null;
+
+    // Pull-to-creek transition cleanup handle
+    let pullTimeoutId = null;
 
     // ── UI fade ───────────────────────────────────────────────────────────
     // Elements with class "ui-element" fade out on interaction and return
