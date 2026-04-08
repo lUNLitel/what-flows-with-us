@@ -137,7 +137,7 @@ html, body {
 }
 
 /* shared style for all corner buttons */
-#btn-reset, #btn-randomize, #btn-about {
+#btn-reset, #btn-randomize, #btn-about, #btn-slides {
     position: fixed;
     z-index: 100;
     width: 44px;
@@ -154,18 +154,23 @@ html, body {
     transition: opacity 0.4s ease, background 0.2s ease;
 }
 
-#btn-reset:hover, #btn-randomize:hover, #btn-about:hover {
+#btn-reset:hover, #btn-randomize:hover, #btn-about:hover, #btn-slides:hover {
     background: rgba(0, 0, 0, 0.50);
 }
 
-#btn-reset svg, #btn-randomize svg, #btn-about svg {
+#btn-reset svg, #btn-randomize svg, #btn-about svg, #btn-slides svg {
     width: 20px;
     height: 20px;
 }
 
 #btn-reset     { bottom: 28px; right: 28px; }
 #btn-randomize { bottom: 28px; right: 80px; }
+#btn-slides    { bottom: 28px; right: 132px; }
 #btn-about     { bottom: 28px; left: 28px; }
+
+#btn-slides.active {
+    background: rgba(95, 158, 160, 0.55);
+}
 
 #footer-note {
     position: fixed;
@@ -503,6 +508,7 @@ html, body {
     /* Tighten button spacing */
     #btn-reset     { bottom: 20px; right: 20px; }
     #btn-randomize { bottom: 20px; right: 72px; }
+    #btn-slides    { bottom: 20px; right: 124px; }
     #btn-about     { bottom: 20px; left: 20px; }
     #footer-note   { bottom: 6px; }
 }

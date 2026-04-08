@@ -39,6 +39,7 @@
     // To add a new creek: append an entry to CREEKS, add its <img class="creek-img">
     // and <div class="info-panel"> to index.html with matching ids.
 
+    /** @type {Array<{id:string, panelId:string, src:string, zoomTo:number, viewX:number, panelSide:string, img:HTMLElement|null, panel:HTMLElement|null, centroid:{x:number,y:number}, hitData:Uint8Array|null, ripple:HTMLElement|null}>} */
     const CREEKS = [
         { id: 'creek-brothers',  panelId: 'panel-brothers',  src: 'media/water_ui/brothers creek.png',  zoomTo: 2.5, viewX: 0.30, panelSide: 'right' },
         { id: 'creek-latimer',   panelId: 'panel-latimer',   src: 'media/water_ui/latimer creek.png',   zoomTo: 2.0, viewX: 0.70, panelSide: 'left'  },
@@ -46,7 +47,10 @@
         { id: 'creek-fraser02',  panelId: 'panel-fraser02',  src: 'media/water_ui/fraser river_02.png', zoomTo: 1.5, viewX: 0.70, panelSide: 'left'  },
         { id: 'creek-stoney',    panelId: 'panel-stoney',    src: 'media/water_ui/stoney creek.png',    zoomTo: 2.0, viewX: 0.30, panelSide: 'right' },
         { id: 'creek-bear',      panelId: 'panel-bear',      src: 'media/water_ui/bear creek.png',      zoomTo: 2.0, viewX: 0.70, panelSide: 'left'  },
-        { id: 'creek-archibald', panelId: 'panel-archibald', src: 'media/water_ui/archibald creek.png', zoomTo: 2.0, viewX: 0.70, panelSide: 'left'  },
+        { id: 'creek-archibald', panelId: 'panel-archibald', src: 'media/water_ui/archibald creek.png',           zoomTo: 2.0, viewX: 0.70, panelSide: 'left'  },
+        { id: 'creek-burrard',   panelId: 'panel-burrard',   src: 'media/water_ui/burrard inlet in port moody.png', zoomTo: 2.0, viewX: 0.30, panelSide: 'right' },
+        { id: 'creek-lynn',      panelId: 'panel-lynn',      src: 'media/water_ui/lynn creek.png',                  zoomTo: 2.0, viewX: 0.30, panelSide: 'right' },
+        { id: 'creek-harbour',   panelId: 'panel-harbour',   src: 'media/water_ui/harbour view park.png',           zoomTo: 2.0, viewX: 0.50, panelSide: 'right' },
     ];
 
     CREEKS.forEach(c => {
@@ -203,6 +207,7 @@
         const targetY  = isMobile ? 0.45 * 0.5 : 0.50;
         const nx = clamp(vw * targetX - creek.centroid.x * zoomTo, vw - MAP_W * zoomTo, 0);
         const ny = clamp(vh * targetY - creek.centroid.y * zoomTo, vh - MAP_H * zoomTo, 0);
+        creek.img.style.opacity = '';
         CREEKS.forEach(c => { if (c.img && c !== creek) c.img.style.opacity = '0'; });
         container.style.transition = creekContainer.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
         x = nx; y = ny; scale = zoomTo; targetScale = zoomTo;
@@ -390,6 +395,7 @@
     viewport.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
         e.preventDefault();
+        stopSlides();
         isDragging   = true;
         velX = velY  = 0;
         moveHistory  = [];
@@ -430,6 +436,7 @@
 
     viewport.addEventListener('wheel', e => {
         e.preventDefault();
+        stopSlides();
         hideUI();
         setFastRendering();
 
@@ -471,6 +478,7 @@
 
     viewport.addEventListener('touchstart', e => {
         e.preventDefault();
+        stopSlides();
         velX = velY = 0;
         isDragging       = true;
         touchMoveHistory = [];
@@ -625,6 +633,42 @@
         const creek = getNextRandomCreek();
         pullToCreek(creek);
         openPanel(creek);
+    });
+
+    // ── Slideshow ─────────────────────────────────────────────────────────
+
+    const btnSlides = document.getElementById('btn-slides');
+    let slidesActive = false;
+    let slidesTimer  = null;
+    let slidesIndex  = 0;
+
+    function startSlides() {
+        slidesActive = true;
+        slidesIndex  = 0;
+        btnSlides.classList.add('active');
+        advanceSlide();
+    }
+
+    function advanceSlide() {
+        if (!slidesActive) return;
+        const creek = CREEKS[slidesIndex % CREEKS.length];
+        slidesIndex++;
+        pullToCreek(creek);
+        openPanel(creek);
+        slidesTimer = setTimeout(advanceSlide, 20000);
+    }
+
+    function stopSlides() {
+        if (!slidesActive) return;
+        slidesActive = false;
+        clearTimeout(slidesTimer);
+        slidesTimer = null;
+        btnSlides.classList.remove('active');
+    }
+
+    btnSlides.addEventListener('click', () => {
+        if (slidesActive) stopSlides();
+        else startSlides();
     });
 
     // ── About overlay ─────────────────────────────────────────────────────
